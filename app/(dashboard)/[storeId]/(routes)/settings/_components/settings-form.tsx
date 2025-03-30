@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertModal } from "@/components/modals/alert-modal";
+import { ApiAlert } from "@/components/ui/api-alert";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,6 +14,7 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useOrigin } from "@/hooks/use-origin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Store } from "@prisma/client";
 import axios from "axios";
@@ -34,6 +36,7 @@ const formSchema = zod.object({
 type SettingsFormSchema = zod.infer<typeof formSchema>;
 
 export const SettingsForm = ({ initialData }: SettingsFormProps) => {
+  const origin = useOrigin();
   const navRouter = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -153,6 +156,8 @@ export const SettingsForm = ({ initialData }: SettingsFormProps) => {
           </Button>
         </form>
       </Form>
+      <Separator />
+      <ApiAlert title="NEXT_API_URL" description={`${origin}/api/${initialData.id}`} variant="public" />
     </>
   );
 };
