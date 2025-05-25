@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useOrigin } from "@/hooks/use-origin";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Size } from "@prisma/client";
+import { Color } from "@prisma/client";
 import axios from "axios";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -25,56 +25,60 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import * as zod from "zod";
 
-interface SizesFormProps {
-  initialData: Size | null;
+interface ColorsFormProps {
+  initialData: Color | null;
 }
 
 const formSchema = zod.object({
   name: zod.string().min(1),
-  value: zod.string().min(1),
+  value: zod
+    .string()
+    .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/, {
+      message: "Invalid hex color. Must be #RGB, #RRGGBB, or #RRGGBBAA.",
+    }),
 });
 
-type SizesFormSchema = zod.infer<typeof formSchema>;
+type ColorsFormSchema = zod.infer<typeof formSchema>;
 
-export const SizesForm = ({ initialData }: SizesFormProps) => {
+export const ColorsForm = ({ initialData }: ColorsFormProps) => {
   const params = useParams();
   const origin = useOrigin();
   const navRouter = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<SizesFormSchema>({
+  const form = useForm<ColorsFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || { name: "", value: "" },
   });
 
-  const title = initialData ? "Edit Size" : "Create Size";
+  const title = initialData ? "Edit Color" : "Create Color";
   const description = initialData
-    ? "Change the label or image of the size"
-    : "Add a new size";
-  const toastMessage = initialData ? "Size updated." : "Size created.";
+    ? "Change the label or image of the color"
+    : "Add a new color";
+  const toastMessage = initialData ? "Color updated." : "Color created.";
   const action = initialData ? "Save Changes" : "Create";
 
-  const sizesSubmitHandler = (values: SizesFormSchema) => {
+  const colorsSubmitHandler = (values: ColorsFormSchema) => {
     startTransition(async () => {
       try {
-        let sizeRes;
+        let colorRes;
 
         if (initialData) {
-          sizeRes = await axios.patch(
-            `/api/${params.storeId}/sizes/${params.sizeId}`,
+          colorRes = await axios.patch(
+            `/api/${params.storeId}/colors/${params.colorId}`,
             values
           );
         } else {
-          sizeRes = await axios.post(`/api/${params.storeId}/sizes`, values);
+          colorRes = await axios.post(`/api/${params.storeId}/colors`, values);
         }
 
-        if (sizeRes.status != 200) {
-          console.log(sizeRes);
+        if (colorRes.status != 200) {
+          console.log(colorRes);
           throw new Error("Something went wrong!");
         }
 
-        const responseData = sizeRes.data;
+        const responseData = colorRes.data;
 
         if (responseData.status != "success") {
           console.log(responseData);
@@ -82,27 +86,27 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
         }
 
         toast.success(toastMessage);
-        navRouter.push(`/${params.storeId}/sizes`);
+        navRouter.push(`/${params.storeId}/colors`);
       } catch (error) {
-        console.log("SIZe_FORM_SUBMIT", error);
+        console.log("Color_FORM_SUBMIT", error);
         toast.error("Something went wrong!");
       }
     });
   };
 
-  const sizeHandler = () => {
+  const colorHandler = () => {
     startTransition(async () => {
       try {
-        const sizeRes = await axios.delete(
-          `/api/${params.storeId}/sizes/${params.sizeId}`
+        const colorRes = await axios.delete(
+          `/api/${params.storeId}/colors/${params.colorId}`
         );
 
-        if (sizeRes.status != 200) {
-          console.log(sizeRes);
+        if (colorRes.status != 200) {
+          console.log(colorRes);
           throw new Error("Something went wrong!");
         }
 
-        const responseData = sizeRes.data;
+        const responseData = colorRes.data;
 
         if (responseData.status != "success") {
           console.log(responseData);
@@ -110,11 +114,11 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
         }
 
         setOpen(false);
-        toast.success("Size deleted successfully!");
+        toast.success("Color deleted successfully!");
 
-        navRouter.push(`/${params.storeId}/sizes`);
+        navRouter.push(`/${params.storeId}/colors`);
       } catch (error) {
-        console.log("SIZe_FORM_DELETE", error);
+        console.log("Color_FORM_DELETE", error);
         toast.error("Something went wrong!");
       }
     });
@@ -126,7 +130,7 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
         loading={isPending}
         open={open}
         onClose={() => setOpen(false)}
-        onConfirm={sizeHandler}
+        onConfirm={colorHandler}
       />
       <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
@@ -135,7 +139,7 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
             disabled={isPending}
             className="cursor-pointer"
             variant={"destructive"}
-            size={"icon"}
+            color={"icon"}
             onClick={() => setOpen(true)}
           >
             <Trash className="w-4 h-4" />
@@ -148,41 +152,47 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
       <Form {...form}>
         <form
           className="space-y-8 w-full"
-          onSubmit={form.handleSubmit(sizesSubmitHandler)}
+          onSubmit={form.handleSubmit(colorsSubmitHandler)}
         >
           <div className="grid grid-cols-3 gap-8">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>Size Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isPending}
-                      placeholder="Size label"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Color Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={isPending}
+                        placeholder="Color label"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
             <FormField
               control={form.control}
               name="value"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Size Value</FormLabel>
+                    <FormLabel>Color Value</FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={isPending}
-                        placeholder="Size value"
-                        {...field}
-                      />
+                      <div className="flex items-center gap-x-2">
+                        <Input
+                          disabled={isPending}
+                          placeholder="Color value"
+                          {...field}
+                        />
+                        <div
+                          className="border p-4 rounded-full"
+                          style={{ backgroundColor: field.value }}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -192,7 +202,7 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
           </div>
           <Button
             className="ml-auto cursor-pointer"
-            size={"lg"}
+            color={"lg"}
             type="submit"
             disabled={isPending}
           >
