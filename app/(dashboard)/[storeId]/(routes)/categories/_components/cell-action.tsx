@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BillboardColumn } from "./columns";
+import { CategoryColumn } from "./columns";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import toast from "react-hot-toast";
@@ -17,7 +17,7 @@ import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
 
 interface CellActionProps {
-  data: BillboardColumn;
+  data: CategoryColumn;
 }
 
 export const CellAction = ({ data }: CellActionProps) => {
@@ -26,30 +26,30 @@ export const CellAction = ({ data }: CellActionProps) => {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const { id: billboardId, label, createdAt } = data;
+  const { id: categoryId, } = data;
 
   const onCopy = () => {
-    navigator.clipboard.writeText(billboardId);
-    toast.success("Billboard ID copied to clipboard.");
+    navigator.clipboard.writeText(categoryId);
+    toast.success("Category ID copied to clipboard.");
   };
 
   const onUpdate = () => {
-    navRouter.push(`/${storeId}/billboards/${billboardId}`);
+    navRouter.push(`/${storeId}/categories/${categoryId}`);
   };
 
   const onDelete = () => {
     startTransition(async () => {
       try {
-        const deleteBillboardRes = await axios.delete(
-          `/api/${storeId}/billboards/${billboardId}`
+        const deleteCategoryRes = await axios.delete(
+          `/api/${storeId}/categories/${categoryId}`
         );
 
-        if (deleteBillboardRes.status != 200) {
-          console.log(deleteBillboardRes);
+        if (deleteCategoryRes.status != 200) {
+          console.log(deleteCategoryRes);
           throw new Error("Something went wrong!");
         }
 
-        const responseData = deleteBillboardRes.data;
+        const responseData = deleteCategoryRes.data;
 
         if (responseData.status != "success") {
           console.log(responseData);
@@ -58,9 +58,9 @@ export const CellAction = ({ data }: CellActionProps) => {
 
         setOpen(false);
         navRouter.refresh();
-        toast.success("Billboard deleted successfully!");
+        toast.success("Category deleted successfully!");
       } catch (error) {
-        console.log("BILLBOARD_FORM_DELETE", error);
+        console.log("CATEGORY_FORM_DELETE", error);
         toast.error("Something went wrong!");
       }
     });

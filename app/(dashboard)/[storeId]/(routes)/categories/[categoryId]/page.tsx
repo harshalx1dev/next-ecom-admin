@@ -1,0 +1,24 @@
+import { ecomDb } from "@/lib/ecom-db";
+import { CategoriesForm } from "../_components/categories-form";
+
+const CategoryPage = async ({ params }: { params: Promise<{ categoryId: string, storeId: string }> }) => {
+  const { categoryId, storeId } = await params;
+
+  const category = await ecomDb.category.findUnique({
+    where: { id: categoryId }
+  });
+
+  const billboards = await ecomDb.billboard.findMany({
+    where: { storeId }
+  })
+
+  return (
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <CategoriesForm billboards={billboards} initialData={category} />
+      </div>
+    </div>
+  ) 
+};
+
+export default CategoryPage;

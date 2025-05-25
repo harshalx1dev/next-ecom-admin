@@ -1,30 +1,31 @@
 import { ecomDb } from "@/lib/ecom-db";
-import { BillboardClient } from "./_components/billboard-client";
-import { BillboardColumn } from "./_components/columns";
+import { CategoryClient } from "./_components/category-client";
+import { CategoryColumn } from "./_components/columns";
 import { format } from "date-fns";
 
-const BillboardsPage = async ({
+const CategoriesPage = async ({
   params,
 }: {
   params: Promise<{ storeId: string }>;
 }) => {
   const { storeId } = await params;
 
-  const billboards = await ecomDb.billboard.findMany({
+  const categories = await ecomDb.category.findMany({
     where: { storeId },
+    include: { billboard: true }
   });
 
-  const formattedBillboards: BillboardColumn[] = billboards.map(
-    ({ id, label, createdAt }) => ({ id, label, createdAt: format(createdAt, "MMMM do, yyyy") })
+  const formattedCategories: CategoryColumn[] = categories.map(
+    ({ id, name, createdAt, billboard }) => ({ id, name, billboardLabel: billboard.label, createdAt: format(createdAt, "MMMM do, yyyy") })
   );
 
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <BillboardClient billboards={formattedBillboards} />
+        <CategoryClient categories={formattedCategories} />
       </div>
     </div>
   );
 };
 
-export default BillboardsPage;
+export default CategoriesPage;
