@@ -15,3 +15,8 @@ export const genericResponse = ({ success, data = null, message, status, error =
     error
   }, { status })
 }
+
+export const priceFormatter = new Intl.NumberFormat("en-in", {
+  style: "currency",
+  currency: "INR"
+})

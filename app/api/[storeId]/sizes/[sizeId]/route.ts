@@ -4,6 +4,50 @@ import { ecomDb } from "@/lib/ecom-db";
 import { genericResponse } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 
+export const GET = async (
+  _req: Request,
+  { params }: { params: Promise<{ sizeId: string }> }
+) => {
+  try {
+    const { sizeId } = await params;
+
+    if (!sizeId)
+      return genericResponse({
+        status: 400,
+        success: false,
+        message: "Size ID is required!",
+      });
+
+    const size = await ecomDb.size.findUnique({
+      where: { id: sizeId },
+    });
+
+    if (size) {
+      return genericResponse({
+        status: 200,
+        success: true,
+        message: "Size found!",
+        data: size,
+      });
+    } else {
+      return genericResponse({
+        status: 404,
+        success: false,
+        message: "Size does not exist!",
+        data: size,
+      });
+    }
+  } catch (error) {
+    console.log("[SIZE_GET]", error);
+    return genericResponse({
+      status: 500,
+      success: false,
+      message: "Internal server error",
+      error: error as Error,
+    });
+  }
+};
+
 export const PATCH = async (
   req: Request,
   { params }: { params: Promise<{ sizeId: string; storeId: string }> }

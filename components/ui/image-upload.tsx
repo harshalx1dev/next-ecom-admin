@@ -55,7 +55,7 @@ export const ImageUpload = ({
             <Image
               fill
               className="object-cover"
-              alt="Billboard Image"
+              alt="Image"
               src={url}
             />
           </div>

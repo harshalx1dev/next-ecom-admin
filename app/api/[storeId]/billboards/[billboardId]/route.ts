@@ -4,6 +4,50 @@ import { ecomDb } from "@/lib/ecom-db";
 import { genericResponse } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 
+export const GET = async (
+  _req: Request,
+  { params }: { params: Promise<{ billboardId: string }> }
+) => {
+  try {
+    const { billboardId } = await params;
+
+    if (!billboardId)
+      return genericResponse({
+        status: 400,
+        success: false,
+        message: "Billboard ID is required!",
+      });
+
+    const billboard = await ecomDb.billboard.findUnique({
+      where: { id: billboardId },
+    });
+
+    if (billboard) {
+      return genericResponse({
+        status: 200,
+        success: true,
+        message: "Billboard found!",
+        data: billboard,
+      });
+    } else {
+      return genericResponse({
+        status: 404,
+        success: false,
+        message: "Billboard does not exist!",
+        data: billboard,
+      });
+    }
+  } catch (error) {
+    console.log("[BILLBOARD_GET]", error);
+    return genericResponse({
+      status: 500,
+      success: false,
+      message: "Internal server error",
+      error: error as Error,
+    });
+  }
+};
+
 export const PATCH = async (
   req: Request,
   { params }: { params: Promise<{ billboardId: string; storeId: string }> }

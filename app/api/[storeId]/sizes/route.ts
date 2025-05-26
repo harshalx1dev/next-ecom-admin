@@ -25,7 +25,7 @@ export const POST = async (
 
     if (!currentStore)
       return genericResponse({
-        status: 500,
+        status: 404,
         success: false,
         message: "Store does not exist!",
       });
@@ -91,7 +91,7 @@ export const GET = async (
 
     if (!currentStore)
       return genericResponse({
-        status: 500,
+        status: 404,
         success: false,
         message: "Store does not exist!",
       });
@@ -100,11 +100,11 @@ export const GET = async (
       where: { storeId },
     });
 
-    if (!sizes) {
+    if (sizes) {
       return genericResponse({
         status: 200,
         success: true,
-        message: "Size fetched successfully",
+        message: "Sizes fetched successfully",
         data: sizes,
       });
     } else {

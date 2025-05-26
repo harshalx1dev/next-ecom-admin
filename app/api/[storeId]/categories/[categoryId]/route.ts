@@ -4,6 +4,50 @@ import { ecomDb } from "@/lib/ecom-db";
 import { genericResponse } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 
+export const GET = async (
+  _req: Request,
+  { params }: { params: Promise<{ categoryId: string }> }
+) => {
+  try {
+    const { categoryId } = await params;
+
+    if (!categoryId)
+      return genericResponse({
+        status: 400,
+        success: false,
+        message: "Category ID is required!",
+      });
+
+    const category = await ecomDb.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (category) {
+      return genericResponse({
+        status: 200,
+        success: true,
+        message: "Category found!",
+        data: category,
+      });
+    } else {
+      return genericResponse({
+        status: 404,
+        success: false,
+        message: "Category does not exist!",
+        data: category,
+      });
+    }
+  } catch (error) {
+    console.log("[CATEGORY_GET]", error);
+    return genericResponse({
+      status: 500,
+      success: false,
+      message: "Internal server error",
+      error: error as Error,
+    });
+  }
+};
+
 export const PATCH = async (
   req: Request,
   { params }: { params: Promise<{ categoryId: string; storeId: string }> }

@@ -4,6 +4,50 @@ import { ecomDb } from "@/lib/ecom-db";
 import { genericResponse } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 
+export const GET = async (
+  _req: Request,
+  { params }: { params: Promise<{ colorId: string }> }
+) => {
+  try {
+    const { colorId } = await params;
+
+    if (!colorId)
+      return genericResponse({
+        status: 400,
+        success: false,
+        message: "Color ID is required!",
+      });
+
+    const color = await ecomDb.color.findUnique({
+      where: { id: colorId },
+    });
+
+    if (color) {
+      return genericResponse({
+        status: 200,
+        success: true,
+        message: "Color found!",
+        data: color,
+      });
+    } else {
+      return genericResponse({
+        status: 404,
+        success: false,
+        message: "Color does not exist!",
+        data: color,
+      });
+    }
+  } catch (error) {
+    console.log("[COLOR_GET]", error);
+    return genericResponse({
+      status: 500,
+      success: false,
+      message: "Internal server error",
+      error: error as Error,
+    });
+  }
+};
+
 export const PATCH = async (
   req: Request,
   { params }: { params: Promise<{ colorId: string; storeId: string }> }
