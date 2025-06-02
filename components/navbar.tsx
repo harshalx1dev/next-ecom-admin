@@ -6,6 +6,7 @@ import { StoreSwitcher } from "./store-switcher"
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { ecomDb } from "@/lib/ecom-db";
+import { ThemeToggle } from "./theme-toggle";
 
 export const NavBar = async () => {
   const { userId } = await auth(); 
@@ -24,6 +25,7 @@ export const NavBar = async () => {
         <StoreSwitcher items={availableStores} />
         <MainNav className="mx-6" />
         <div className="ml-auto flex items-center space-x-4">
+          <ThemeToggle />
           <UserButton appearance={{
             elements: {
               userButtonAvatarBox: 'md:min-w-10 md:min-h-10'

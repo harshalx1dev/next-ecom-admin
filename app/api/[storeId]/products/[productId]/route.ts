@@ -20,6 +20,7 @@ export const GET = async (
 
     const product = await ecomDb.product.findUnique({
       where: { id: productId },
+      include: { category: true, color: true, size: true, images: true },
     });
 
     if (product) {

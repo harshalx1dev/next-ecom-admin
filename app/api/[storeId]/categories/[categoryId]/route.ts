@@ -20,6 +20,7 @@ export const GET = async (
 
     const category = await ecomDb.category.findUnique({
       where: { id: categoryId },
+      include: { billboard: true }
     });
 
     if (category) {
