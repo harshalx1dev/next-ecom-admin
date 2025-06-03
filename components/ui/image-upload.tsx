@@ -22,11 +22,10 @@ export const ImageUpload = ({
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (!isMounted) {
-      setIsMounted(true);
-    }
+    setIsMounted(true);
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onUpload = (result: any) => {
     onChange(result.info.secure_url);
   };

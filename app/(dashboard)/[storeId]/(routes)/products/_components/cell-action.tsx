@@ -26,7 +26,7 @@ export const CellAction = ({ data }: CellActionProps) => {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const { id: productId, name, createdAt } = data;
+  const { id: productId } = data;
 
   const onCopy = () => {
     navigator.clipboard.writeText(productId);

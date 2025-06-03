@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useOrigin } from "@/hooks/use-origin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Billboard, Category } from "@prisma/client";
 import axios from "axios";
@@ -45,7 +44,6 @@ type CategoriesFormSchema = zod.infer<typeof formSchema>;
 
 export const CategoriesForm = ({ initialData, billboards }: CategoriesFormProps) => {
   const params = useParams();
-  const origin = useOrigin();
   const navRouter = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();

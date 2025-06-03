@@ -97,7 +97,7 @@ export const PATCH = async (
         message: "Product does not exist!",
       });
 
-    const updatedProduct = await ecomDb.product.update({
+    await ecomDb.product.update({
       where: { id: productId },
       data: {
         name,

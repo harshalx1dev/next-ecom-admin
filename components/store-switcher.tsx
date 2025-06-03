@@ -4,7 +4,7 @@ import { Store } from "@prisma/client";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "./ui/command";
 import { useStoreModal } from "@/hooks/use-store-modal";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { CheckIcon, ChevronsUpDown, PlusCircle, Store as StoreIcon } from "lucide-react";
 import { useState } from "react";

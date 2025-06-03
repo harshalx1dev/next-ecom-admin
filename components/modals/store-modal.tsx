@@ -11,14 +11,13 @@ import { Input } from "../ui/input";
 import { useTransition } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { GenericResponse } from "@/lib/types";
 
 const StoreFormSchema = zod.object({
   name: zod.string().min(1)
 })
 
 export const StoreModal = () => {
-  const { isOpen, onClose, onOpen } = useStoreModal();
+  const { isOpen, onClose } = useStoreModal();
   const [isPending, startTransition] = useTransition();
   const form = useForm<zod.infer<typeof StoreFormSchema>>({
     resolver: zodResolver(StoreFormSchema),

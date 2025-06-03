@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BillboardColumn } from "./columns";
+import { OrderColumn } from "./columns";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import toast from "react-hot-toast";
@@ -17,7 +17,7 @@ import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
 
 interface CellActionProps {
-  data: BillboardColumn;
+  data: OrderColumn;
 }
 
 export const CellAction = ({ data }: CellActionProps) => {
@@ -26,7 +26,7 @@ export const CellAction = ({ data }: CellActionProps) => {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const { id: billboardId, label, createdAt } = data;
+  const { id: billboardId } = data;
 
   const onCopy = () => {
     navigator.clipboard.writeText(billboardId);

@@ -14,7 +14,6 @@ import { Heading } from "@/components/ui/heading";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useOrigin } from "@/hooks/use-origin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Billboard } from "@prisma/client";
 import axios from "axios";
@@ -38,7 +37,6 @@ type BillboardsFormSchema = zod.infer<typeof formSchema>;
 
 export const BillboardsForm = ({ initialData }: BillboardsFormProps) => {
   const params = useParams();
-  const origin = useOrigin();
   const navRouter = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();

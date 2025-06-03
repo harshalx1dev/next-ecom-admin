@@ -33,10 +33,10 @@ export const PATCH = async (request: Request, { params }: { params: Promise<{sto
 
 }
 
-export const DELETE = async (_request: Request, { params }: { params: { storeId: string } }) => {
+export const DELETE = async (_request: Request, { params }: { params: Promise<{storeId: string}> }) => {
 
   try {
-    const { storeId } = params;
+    const { storeId } = await params;
     const { userId } = await auth();
 
     if (!userId) return genericResponse({ status: 401, success: false, message: 'Unauthorized' });

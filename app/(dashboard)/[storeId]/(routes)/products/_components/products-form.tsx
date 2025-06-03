@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useOrigin } from "@/hooks/use-origin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Category, Color, Image, Product, Size } from "@prisma/client";
 import axios from "axios";
@@ -65,7 +64,6 @@ export const ProductsForm = ({
   colors,
 }: ProductsFormProps) => {
   const params = useParams();
-  const origin = useOrigin();
   const navRouter = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
