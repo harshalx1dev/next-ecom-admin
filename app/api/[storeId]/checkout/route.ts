@@ -15,10 +15,14 @@ export async function OPTIONS() {
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ storeId: string }> }
+  { params }: { params: { storeId: string } }
 ) {
-  const { storeId } = await params;
+  const { storeId } = params;
   const { productIds } = await req.json();
+
+  if (!storeId) {
+    return new NextResponse("Store ID is required!", { status: 400 });
+  } 
 
   if (!productIds || !productIds.length)
     return new NextResponse("Product IDs are required!", { status: 400 });
