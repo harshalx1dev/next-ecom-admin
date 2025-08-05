@@ -10,7 +10,8 @@ export const POST = async (
     const { userId } = await auth();
     const { storeId } = await params;
     const body = await req.json();
-    let { label, imageUrl, labelColor } = body;
+    const { label, imageUrl } = body;
+    let { labelColor } = body;
 
     if (!userId)
       return genericResponse({
