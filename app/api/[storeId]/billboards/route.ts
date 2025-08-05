@@ -10,7 +10,7 @@ export const POST = async (
     const { userId } = await auth();
     const { storeId } = await params;
     const body = await req.json();
-    const { label, imageUrl } = body;
+    let { label, imageUrl, labelColor } = body;
 
     if (!userId)
       return genericResponse({
@@ -44,10 +44,13 @@ export const POST = async (
         message: "Image URL is required",
       });
 
+    if (!labelColor) labelColor = '#000000';
+
     const newBillboard = await ecomDb.billboard.create({
       data: {
         label,
         imageUrl,
+        labelColor,
         storeId,
       },
     });

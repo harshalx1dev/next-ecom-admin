@@ -31,6 +31,7 @@ interface BillboardsFormProps {
 const formSchema = zod.object({
   label: zod.string().min(1),
   imageUrl: zod.string().min(1),
+  labelColor: zod.string().min(1),
 });
 
 type BillboardsFormSchema = zod.infer<typeof formSchema>;
@@ -43,7 +44,7 @@ export const BillboardsForm = ({ initialData }: BillboardsFormProps) => {
 
   const form = useForm<BillboardsFormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || { label: "", imageUrl: "" },
+    defaultValues: initialData || { label: "", imageUrl: "", labelColor: "" },
   });
 
   const title = initialData ? "Edit Billboard" : "Create Billboard";
@@ -185,6 +186,31 @@ export const BillboardsForm = ({ initialData }: BillboardsFormProps) => {
                         placeholder="Billboard label"
                         {...field}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="labelColor"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Label Color</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-x-2">
+                        <Input
+                          disabled={isPending}
+                          placeholder="Label Color"
+                          {...field}
+                        />
+                        <div
+                          className="border p-4 rounded-full"
+                          style={{ backgroundColor: field.value }}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
