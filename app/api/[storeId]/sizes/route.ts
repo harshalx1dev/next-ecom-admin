@@ -87,11 +87,13 @@ export const POST = async (
 };
 
 export const GET = async (
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ storeId: string }> }
 ) => {
   try {
     const { storeId } = await params;
+    const { searchParams } = new URL(req.url)
+    const categoryId = searchParams.get('categoryId');
 
     const currentStore = await ecomDb.store.findUnique({
       where: { id: storeId },
@@ -105,7 +107,7 @@ export const GET = async (
       });
 
     const sizes = await ecomDb.size.findMany({
-      where: { storeId },
+      where: { storeId, ...(categoryId ? { categoryId } : {}) },
     });
 
     if (sizes) {
