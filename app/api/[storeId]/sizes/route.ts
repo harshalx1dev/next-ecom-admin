@@ -10,7 +10,7 @@ export const POST = async (
     const { userId } = await auth();
     const { storeId } = await params;
     const body = await req.json();
-    const { name, value } = body;
+    const { name, value, categoryId } = body;
 
     if (!userId)
       return genericResponse({
@@ -44,11 +44,19 @@ export const POST = async (
         message: "Value is required",
       });
 
+    if (!categoryId)
+      return genericResponse({
+        status: 400,
+        success: false,
+        message: "Value is required",
+      });
+
     const newSize = await ecomDb.size.create({
       data: {
         name,
         value,
         storeId,
+        categoryId
       },
     });
 

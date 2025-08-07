@@ -12,9 +12,16 @@ import {
 } from "@/components/ui/form";
 import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Size } from "@prisma/client";
+import { Category, Size } from "@prisma/client";
 import axios from "axios";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -25,16 +32,18 @@ import * as zod from "zod";
 
 interface SizesFormProps {
   initialData: Size | null;
+  categories: Category[] | null;
 }
 
 const formSchema = zod.object({
   name: zod.string().min(1),
   value: zod.string().min(1),
+  categoryId: zod.string().min(1),
 });
 
 type SizesFormSchema = zod.infer<typeof formSchema>;
 
-export const SizesForm = ({ initialData }: SizesFormProps) => {
+export const SizesForm = ({ initialData, categories }: SizesFormProps) => {
   const params = useParams();
   const navRouter = useRouter();
   const [open, setOpen] = useState(false);
@@ -42,7 +51,11 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
 
   const form = useForm<SizesFormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || { name: "", value: "" },
+    defaultValues: {
+      name: initialData?.name ?? "",
+      value: initialData?.value ?? "",
+      categoryId: initialData?.categoryId ?? "",
+    },
   });
 
   const title = initialData ? "Edit Size" : "Create Size";
@@ -81,7 +94,7 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
         toast.success(toastMessage);
         navRouter.push(`/${params.storeId}/sizes`);
       } catch (error) {
-        console.log("SIZe_FORM_SUBMIT", error);
+        console.log("SIZE_FORM_SUBMIT", error);
         toast.error("Something went wrong!");
       }
     });
@@ -148,25 +161,25 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
           onSubmit={form.handleSubmit(sizesSubmitHandler)}
         >
           <div className="grid grid-cols-3 gap-8">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>Size Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isPending}
-                      placeholder="Size label"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Size Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={isPending}
+                        placeholder="Size label"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
             <FormField
               control={form.control}
               name="value"
@@ -181,6 +194,40 @@ export const SizesForm = ({ initialData }: SizesFormProps) => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select
+                      disabled={isPending}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="cursor-pointer w-full">
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder="Select a category"
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories?.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 );
