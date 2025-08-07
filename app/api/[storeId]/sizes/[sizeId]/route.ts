@@ -56,7 +56,7 @@ export const PATCH = async (
     const { userId } = await auth();
     const { sizeId, storeId } = await params;
     const body = await req.json();
-    const { name, value } = body;
+    const { name, value, categoryId } = body;
 
     if (!userId)
       return genericResponse({
@@ -87,11 +87,11 @@ export const PATCH = async (
         message: "Size does not exist!",
       });
 
-    if (!name && !value)
+    if (!name && !value && !categoryId)
       return genericResponse({
         status: 400,
         success: false,
-        message: "Either name or image url is required",
+        message: "Either name, value or categoryId is required",
       });
 
     const updatedSize = await ecomDb.size.update({
@@ -99,6 +99,7 @@ export const PATCH = async (
       data: {
         name: name || currentSize.name,
         value: value || currentSize.value,
+        categoryId: categoryId || currentSize.categoryId,
       },
     });
 

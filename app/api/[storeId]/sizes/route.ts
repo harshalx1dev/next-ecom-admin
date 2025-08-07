@@ -48,7 +48,7 @@ export const POST = async (
       return genericResponse({
         status: 400,
         success: false,
-        message: "Value is required",
+        message: "Category is required",
       });
 
     const newSize = await ecomDb.size.create({

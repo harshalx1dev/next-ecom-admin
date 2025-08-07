@@ -56,7 +56,7 @@ export const PATCH = async (
     const { userId } = await auth();
     const { billboardId, storeId } = await params;
     const body = await req.json();
-    const { label, imageUrl } = body;
+    const { label, imageUrl, labelColor } = body;
 
     if (!userId)
       return genericResponse({
@@ -87,11 +87,11 @@ export const PATCH = async (
         message: "Billboard does not exist!",
       });
 
-    if (!label && !imageUrl)
+    if (!label && !imageUrl && !labelColor)
       return genericResponse({
         status: 400,
         success: false,
-        message: "Either label or image url is required",
+        message: "Either label, image url or label color is required",
       });
 
     const updatedBillboard = await ecomDb.billboard.update({
@@ -99,6 +99,7 @@ export const PATCH = async (
       data: {
         label: label || currentBillboard.label,
         imageUrl: imageUrl || currentBillboard.imageUrl,
+        labelColor: labelColor || currentBillboard.labelColor,
       },
     });
 
