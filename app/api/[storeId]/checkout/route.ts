@@ -63,7 +63,7 @@ export async function POST(
       isPaid: false,
       orderItems: {
         create: productIds.map((productId: string) => ({
-          quantity: quantityMap[productId],
+          quantity: Number(quantityMap[productId]),
           product: {
             connect: {
               id: productId,
