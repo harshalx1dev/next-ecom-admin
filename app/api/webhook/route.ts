@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   const addressString = addressComponents.filter(Boolean).join(', ');
 
   if (event.type === "checkout.session.completed") {
-    const order = await ecomDb.order.update({
+    await ecomDb.order.update({
       where: {
         id: session?.metadata?.orderId
       },
@@ -49,17 +49,17 @@ export async function POST(req: Request) {
       }
     })
 
-    const productIds = order.orderItems.map((ord) => ord.productId);
-    await ecomDb.product.updateMany({
-      where: {
-        id: {
-          in: [...productIds]
-        }
-      },
-      data: {
-        isArchived: true
-      }
-    })
+    // const productIds = order.orderItems.map((ord) => ord.productId);
+    // await ecomDb.product.updateMany({
+    //   where: {
+    //     id: {
+    //       in: [...productIds]
+    //     }
+    //   },
+    //   data: {
+    //     isArchived: true
+    //   }
+    // })
   }
 
   return new NextResponse(null, { status: 200 })
