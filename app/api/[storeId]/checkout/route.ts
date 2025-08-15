@@ -18,14 +18,21 @@ export async function POST(
   { params }: { params: Promise<{ storeId: string }> }
 ) {
   const { storeId } = await params;
-  const { productIds } = await req.json();
+  const { items } = await req.json();
 
   if (!storeId) {
     return new NextResponse("Store ID is required!", { status: 400 });
   } 
 
-  if (!productIds || !productIds.length)
+  if (!items || !items.length)
     return new NextResponse("Product IDs are required!", { status: 400 });
+
+  const quantityMap: Record<string, number> = {};
+
+  const productIds = items.map((item: { productId: string, quantity: number }) => {
+    quantityMap[item.productId] = item.quantity
+    return item.productId;
+  })
 
   const products = await ecomDb.product.findMany({
     where: {
@@ -39,13 +46,13 @@ export async function POST(
 
   products.forEach((prd) => {
     line_items.push({
-      quantity: 1,
+      quantity: quantityMap[prd.id],
       price_data: {
         currency: "USD",
         product_data: {
           name: prd.name,
         },
-        unit_amount: prd.price.toNumber() * 100,
+        unit_amount: (prd.price.toNumber() * quantityMap[prd.id]) * 100,
       },
     });
   });
@@ -56,6 +63,7 @@ export async function POST(
       isPaid: false,
       orderItems: {
         create: productIds.map((productId: string) => ({
+          quantity: quantityMap[productId],
           product: {
             connect: {
               id: productId,

@@ -46,23 +46,23 @@ model Category {
   store       Store     @relation("StoreToCategory", fields: [storeId], references: [id])
   billboardId String
   billboard   Billboard @relation("BillboardToCategory", fields: [billboardId], references: [id])
-  sizes       Size[]   @relation("CategoryToSize")
+  sizes       Size[]    @relation("CategoryToSize")
   products    Product[] @relation("CategoryToProduct")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
 model Size {
-  id        String    @id @default(uuid())
-  storeId   String
-  store     Store     @relation("StoreToSize", fields: [storeId], references: [id])
+  id         String    @id @default(uuid())
+  storeId    String
+  store      Store     @relation("StoreToSize", fields: [storeId], references: [id])
   categoryId String?
   category   Category? @relation("CategoryToSize", fields: [categoryId], references: [id])
-  products  Product[] @relation("SizeToProduct")
-  name      String
-  value     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  products   Product[] @relation("SizeToProduct")
+  name       String
+  value      String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model Color {
@@ -123,4 +123,5 @@ model OrderItem {
   order     Order   @relation("OrderToOrderItem", fields: [orderId], references: [id])
   productId String
   product   Product @relation("ProductToOrderItem", fields: [productId], references: [id])
+  quantity  Decimal
 }
