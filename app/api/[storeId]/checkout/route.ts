@@ -52,7 +52,7 @@ export async function POST(
         product_data: {
           name: prd.name,
         },
-        unit_amount: (prd.price.toNumber() * quantityMap[prd.id]) * 100,
+        unit_amount: Math.round((prd.price.toNumber() * quantityMap[prd.id]) * 100),
       },
     });
   });
