@@ -1,23 +1,20 @@
 "use server";
 
-import { UserButton } from "@clerk/nextjs"
 import { MainNav } from "./main-nav"
 import { StoreSwitcher } from "./store-switcher"
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
-import { ecomDb } from "@/lib/ecom-db";
 import { ThemeToggle } from "./theme-toggle";
+import { fetchAxios } from "@/lib/utils";
+import { ResponseBody, Store } from "@/lib/types";
 
 export const NavBar = async () => {
-  const { userId } = await auth(); 
+  let availableStores: Store[] = [];
 
-  if (!userId) return redirect('/sign-in');
-
-  const availableStores = await ecomDb.store.findMany({
-    where: {
-      userId
-    }
-  });
+  try {
+    const { data } = await fetchAxios<ResponseBody<Store[]>>('get', '/api/stores');
+    if (data.data?.length) availableStores = data.data;
+  } catch (error) {
+    console.error('[ERROR] [NAVBAR]', error);
+  }
 
   return (
     <div className="border-b">
@@ -26,11 +23,6 @@ export const NavBar = async () => {
         <MainNav className="mx-6" />
         <div className="ml-auto flex items-center space-x-4">
           <ThemeToggle />
-          <UserButton appearance={{
-            elements: {
-              userButtonAvatarBox: 'md:min-w-10 md:min-h-10'
-            }
-          }} />
         </div>
       </div>
     </div>

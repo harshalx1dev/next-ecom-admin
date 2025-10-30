@@ -1,4 +1,3 @@
-import { useOrigin } from "@/hooks/use-origin";
 import { ApiAlert } from "./api-alert"
 import { useParams } from "next/navigation";
 
@@ -8,10 +7,9 @@ interface ApiListProps {
 }
 
 export const ApiList = ({ entityName, entityNameId }: ApiListProps) => {
-  const origin = useOrigin();
   const { storeId } = useParams();
   
-  const baseUrl = `${origin}/api/${storeId}`
+  const baseUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/${storeId}`
   
   return (
     <>

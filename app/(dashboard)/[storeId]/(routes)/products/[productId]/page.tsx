@@ -1,25 +1,30 @@
-import { ecomDb } from "@/lib/ecom-db";
 import { ProductsForm } from "../_components/products-form";
+import { fetchAxios } from "@/lib/utils";
+import { Category, Color, ProductWithImages, ResponseBody, Size } from "@/lib/types";
 
 const ProductPage = async ({ params }: { params: Promise<{ productId: string, storeId: string }> }) => {
   const { productId, storeId } = await params;
 
-  const product = await ecomDb.product.findUnique({
-    where: { id: productId },
-    include: { images: true }
-  });
+  let product = null;
+  let categories: Category[] = [];
+  let sizes: Size[] = [];
+  let colors: Color[] = [];
 
-  const categories = await ecomDb.category.findMany({
-    where: { storeId }
-  });
+  try {
+    const [productRes, categoriesRes, sizesRes, colorsRes] = await Promise.all([
+      fetchAxios<ResponseBody<ProductWithImages>>('get', `/api/${storeId}/products/${productId}`),
+      fetchAxios<ResponseBody<Category[]>>('get', `/api/${storeId}/categories`),
+      fetchAxios<ResponseBody<Size[]>>('get', `/api/${storeId}/sizes`),
+      fetchAxios<ResponseBody<Color[]>>('get', `/api/${storeId}/colors`),
+    ]);
 
-  const sizes = await ecomDb.size.findMany({
-    where: { storeId }
-  });
-
-  const colors = await ecomDb.color.findMany({
-    where: { storeId }
-  });
+    if (productRes?.data?.data) product = productRes?.data?.data;
+    if (categoriesRes?.data?.data?.length) categories = categoriesRes?.data?.data;
+    if (sizesRes?.data?.data?.length) sizes = sizesRes?.data?.data;
+    if (colorsRes?.data?.data?.length) colors = colorsRes.data.data;
+  } catch (error) {
+    console.error('[ERROR] [PRODUCT_PAGE]', error);
+  }
 
   return (
     <div className="flex-col">

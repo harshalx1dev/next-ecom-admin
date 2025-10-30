@@ -1,23 +1,19 @@
-import { ecomDb } from "@/lib/ecom-db";
+import { Order, ResponseBody } from "@/lib/types";
+import { fetchAxios } from "@/lib/utils";
 
 export const getTotalRevenue = async (storeId: string) => {
-  const paidOrders = await ecomDb.order.findMany({
-    where: {
-      storeId,
-      isPaid: true,
-    },
-    include: {
-      orderItems: {
-        include: {
-          product: true,
-        },
-      },
-    },
-  });
+  let paidOrders: Order[] = [];
+  
+  try {
+    const { data } = await fetchAxios<ResponseBody<Order[]>>('get', `/api/${storeId}/orders?isPaid=true`);
+    if (data.data?.length) paidOrders = data.data;
+  } catch (error) {
+    console.error('[ERROR] [GET_TOTAL_REVENUE]', error);
+  }
 
   const totalRevenue = paidOrders.reduce((total, order) => {
     total += order.orderItems.reduce((sum, item) => {
-      sum += item.product.price.toNumber()
+      sum += Number(item.product!.price)
       return sum;
     }, 0)
     return total;

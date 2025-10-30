@@ -1,4 +1,5 @@
-import { ecomDb } from "@/lib/ecom-db";
+import { Order, ResponseBody } from "@/lib/types";
+import { fetchAxios } from "@/lib/utils";
 
 interface GraphData {
   name: string;
@@ -6,17 +7,14 @@ interface GraphData {
 }
 
 export const getGraphRevenue = async (storeId: string) => {
-  const paidOrders = await ecomDb.order.findMany({
-    where: {
-      storeId,
-      isPaid: true,
-    },
-    include: {
-      orderItems: {
-        include: { product: true },
-      },
-    },
-  });
+  let paidOrders: Order[] = [];
+
+  try {
+    const { data } = await fetchAxios<ResponseBody<Order[]>>('get', `/api/${storeId}/orders?isPaid=true`);
+    if (data.data?.length) paidOrders = data.data;
+  } catch (error) {
+    console.error('[ERROR] [GET_GRAPH_REVENUE]', error);
+  }
 
   const monthlyRevenue: { [key: number]: number } = {};
 
@@ -25,7 +23,7 @@ export const getGraphRevenue = async (storeId: string) => {
     let revenueOfOrder = 0;
 
     for (const item of order.orderItems) {
-      revenueOfOrder += item.product.price.toNumber();
+      revenueOfOrder += Number(item.product!.price);
     }
 
     monthlyRevenue[month] = (monthlyRevenue[month] || 0) + revenueOfOrder;

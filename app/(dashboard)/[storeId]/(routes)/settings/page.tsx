@@ -1,23 +1,23 @@
-import { ecomDb } from "@/lib/ecom-db";
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { SettingsForm } from "./_components/settings-form";
+import { fetchAxios } from "@/lib/utils";
+import { ResponseBody, Store } from "@/lib/types";
 
 interface SettingsPageProps {
   params: Promise<{ storeId: string }>;
 }
 
 const SettingsPage = async ({ params }: SettingsPageProps) => {
-  const { userId } = await auth();
   const { storeId } = await params;
 
-  if (!userId) return redirect('/sign-in');
-
-  const currentStore = await ecomDb.store.findUnique({
-    where: {
-      id: storeId
-    }
-  });
+  let currentStore = null;
+    
+  try {
+    const { data } = await fetchAxios<ResponseBody<Store>>('get', `/api/stores/${storeId}`);
+    if (data.data) currentStore = data.data;
+  } catch (error) {
+    console.error('[ERROR] [SETTINGS_PAGE]', error);
+  }
 
   if (!currentStore) return redirect('/');
 

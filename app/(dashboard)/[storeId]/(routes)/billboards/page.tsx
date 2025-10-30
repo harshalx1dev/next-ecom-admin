@@ -1,7 +1,8 @@
-import { ecomDb } from "@/lib/ecom-db";
 import { BillboardClient } from "./_components/billboard-client";
 import { BillboardColumn } from "./_components/columns";
 import { format } from "date-fns";
+import { Billboard, ResponseBody } from "@/lib/types";
+import { fetchAxios } from "@/lib/utils";
 
 const BillboardsPage = async ({
   params,
@@ -10,9 +11,14 @@ const BillboardsPage = async ({
 }) => {
   const { storeId } = await params;
 
-  const billboards = await ecomDb.billboard.findMany({
-    where: { storeId },
-  });
+  let billboards: Billboard[] = [];
+
+  try {
+    const { data } = await fetchAxios<ResponseBody<Billboard[]>>('get', `/api/${storeId}/billboards`);
+    if (data.data?.length) billboards = data.data;
+  } catch (error) {
+    console.error('[ERROR] [BILLBOARDS_PAGE]', error);
+  }
 
   const formattedBillboards: BillboardColumn[] = billboards.map(
     ({ id, label, createdAt }) => ({ id, label, createdAt: format(createdAt, "MMMM do, yyyy") })

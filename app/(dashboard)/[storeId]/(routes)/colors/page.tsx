@@ -1,7 +1,8 @@
-import { ecomDb } from "@/lib/ecom-db";
 import { ColorClient } from "./_components/color-client";
 import { ColorColumn } from "./_components/columns";
 import { format } from "date-fns";
+import { Color, ResponseBody } from "@/lib/types";
+import { fetchAxios } from "@/lib/utils";
 
 const ColorsPage = async ({
   params,
@@ -10,9 +11,14 @@ const ColorsPage = async ({
 }) => {
   const { storeId } = await params;
 
-  const colors = await ecomDb.color.findMany({
-    where: { storeId },
-  });
+  let colors: Color[] = [];
+  
+  try {
+    const { data } = await fetchAxios<ResponseBody<Color[]>>('get', `/api/${storeId}/colors`);
+    if (data.data?.length) colors = data.data;
+  } catch (error) {
+    console.error('[ERROR] [COLORS_PAGE]', error);
+  }
 
   const formattedColors: ColorColumn[] = colors.map(
     ({ id, name, value, createdAt }) => ({ id, name, value, createdAt: format(createdAt, "MMMM do, yyyy") })

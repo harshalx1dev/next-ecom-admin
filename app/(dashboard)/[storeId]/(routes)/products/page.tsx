@@ -1,8 +1,8 @@
-import { ecomDb } from "@/lib/ecom-db";
 import { ProductClient } from "./_components/product-client";
 import { ProductColumn } from "./_components/columns";
 import { format } from "date-fns";
-import { priceFormatter } from "@/lib/utils";
+import { fetchAxios, priceFormatter } from "@/lib/utils";
+import { Product, ResponseBody } from "@/lib/types";
 
 const ProductsPage = async ({
   params,
@@ -11,11 +11,14 @@ const ProductsPage = async ({
 }) => {
   const { storeId } = await params;
 
-  const products = await ecomDb.product.findMany({
-    where: { storeId },
-    include: { category: true, size: true, color: true },
-    orderBy: { createdAt: "desc" },
-  });
+  let products: Product[] = [];
+  
+  try {
+    const { data } = await fetchAxios<ResponseBody<Product[]>>('get', `/api/${storeId}/products`);
+    if (data.data?.length) products = data.data;
+  } catch (error) {
+    console.error('[ERROR] [PRODUCTS_PAGE]', error);
+  }
 
   const formattedProducts: ProductColumn[] = products.map(
     ({ id, name, isFeatured, isArchived, price, category, size, color, createdAt }) => ({
@@ -23,10 +26,10 @@ const ProductsPage = async ({
       name,
       isFeatured,
       isArchived,
-      price: priceFormatter.format(price.toNumber()),
-      category: category.name,
-      size: size.name,
-      color: color.value,
+      price: priceFormatter.format(Number(price)),
+      category: category!.name,
+      size: size!.name,
+      color: color!.value,
       createdAt: format(createdAt, "MMMM do, yyyy"),
     })
   );

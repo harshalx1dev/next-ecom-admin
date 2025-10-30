@@ -1,7 +1,8 @@
-import { ecomDb } from "@/lib/ecom-db";
 import { SizeClient } from "./_components/size-client";
 import { SizeColumn } from "./_components/columns";
 import { format } from "date-fns";
+import { ResponseBody, Size } from "@/lib/types";
+import { fetchAxios } from "@/lib/utils";
 
 const SizesPage = async ({
   params,
@@ -10,9 +11,14 @@ const SizesPage = async ({
 }) => {
   const { storeId } = await params;
 
-  const sizes = await ecomDb.size.findMany({
-    where: { storeId },
-  });
+  let sizes: Size[] = [];
+  
+  try {
+    const { data } = await fetchAxios<ResponseBody<Size[]>>('get', `/api/${storeId}/sizes`);
+    if (data.data?.length) sizes = data.data;
+  } catch (error) {
+    console.error('[ERROR] [SIZES_PAGE]', error);
+  }
 
   const formattedSizes: SizeColumn[] = sizes.map(
     ({ id, name, value, createdAt }) => ({ id, name, value, createdAt: format(createdAt, "MMMM do, yyyy") })

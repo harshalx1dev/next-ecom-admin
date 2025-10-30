@@ -1,16 +1,26 @@
-import { ecomDb } from "@/lib/ecom-db";
 import { CategoriesForm } from "../_components/categories-form";
+import { Billboard, Category, ResponseBody } from "@/lib/types";
+import { fetchAxios } from "@/lib/utils";
 
 const CategoryPage = async ({ params }: { params: Promise<{ categoryId: string, storeId: string }> }) => {
   const { categoryId, storeId } = await params;
 
-  const category = await ecomDb.category.findUnique({
-    where: { id: categoryId }
-  });
+  let category = null;
+  let billboards: Billboard[] = [];
+  
+  try {
+    const { data } = await fetchAxios<ResponseBody<Category>>('get', `/api/${storeId}/categories/${categoryId}`);
+    if (data.data) category = data.data;
+  } catch (error) {
+    console.error('[ERROR] [CATEGORY_PAGE]', error);
+  }
 
-  const billboards = await ecomDb.billboard.findMany({
-    where: { storeId }
-  })
+  try {
+    const { data } = await fetchAxios<ResponseBody<Billboard[]>>('get', `/api/${storeId}/billboards`);
+    if (data.data?.length) billboards = data.data;
+  } catch (error) {
+    console.error('[ERROR] [CATEGORY_PAGE]', error);
+  }
 
   return (
     <div className="flex-col">

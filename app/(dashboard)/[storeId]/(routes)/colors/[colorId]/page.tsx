@@ -1,12 +1,18 @@
-import { ecomDb } from "@/lib/ecom-db";
+import { fetchAxios } from "@/lib/utils";
 import { ColorsForm } from "../_components/colors-form";
+import { Color, ResponseBody } from "@/lib/types";
 
-const ColorPage = async ({ params }: { params: Promise<{ colorId: string }> }) => {
-  const { colorId } = await params;
+const ColorPage = async ({ params }: { params: Promise<{ colorId: string, storeId: string }> }) => {
+  const { colorId, storeId } = await params;
 
-  const color = await ecomDb.color.findUnique({
-    where: { id: colorId }
-  });
+  let color = null;
+  
+  try {
+    const { data } = await fetchAxios<ResponseBody<Color>>('get', `/api/${storeId}/colors/${colorId}`);
+    if (data.data) color = data.data;
+  } catch (error) {
+    console.error('[ERROR] [COLOR_PAGE]', error);
+  }
 
   return (
     <div className="flex-col">

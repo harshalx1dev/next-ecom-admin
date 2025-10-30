@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ModalProvider } from "@/providers/modal-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { LoaderProvider } from "@/contexts/loader-context";
+import ClientLayout from "./client-layout";
 
 const interSans = Inter({
   subsets: ["latin"],
@@ -27,18 +28,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${interSans.variable} ${robotoMono.variable} font-sans antialiased`}
-        >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <ToastProvider />
-            <ModalProvider />
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body
+        className={`${interSans.variable} ${robotoMono.variable} font-sans antialiased`}
+      >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <LoaderProvider>
+            <ClientLayout>
+              <ToastProvider />
+              <ModalProvider />
+              {children}
+            </ClientLayout>
+          </LoaderProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

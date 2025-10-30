@@ -1,25 +1,24 @@
 "use server";
 
 import { NavBar } from "@/components/navbar";
-import { ecomDb } from "@/lib/ecom-db";
-import { auth } from "@clerk/nextjs/server";
+import { ResponseBody, Store } from "@/lib/types";
+import { fetchAxios } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
 const DashboardLayout = async ({ children, params }: {
   children: React.ReactNode,
   params: Promise<{ storeId: string }>
 }) => {
-  const { userId } = await auth();
   const { storeId } = await params;
 
-  if (!userId) return redirect('/sign-in');
+  let store;
 
-  const store = await ecomDb.store.findFirst({
-    where: {
-      id: storeId,
-      userId
-    }
-  });
+  try {
+    const { data } = await fetchAxios<ResponseBody<Store>>('get', `/api/stores/${storeId}`);
+    if (data.data) store = data.data;
+  } catch (error) {
+    console.error('[ERROR] [DASHBOARD_LAYOUT]', error);
+  }
 
   if (!store) redirect('/');
 

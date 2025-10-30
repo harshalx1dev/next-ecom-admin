@@ -1,7 +1,8 @@
-import { ecomDb } from "@/lib/ecom-db";
 import { CategoryClient } from "./_components/category-client";
 import { CategoryColumn } from "./_components/columns";
 import { format } from "date-fns";
+import { Category, ResponseBody } from "@/lib/types";
+import { fetchAxios } from "@/lib/utils";
 
 const CategoriesPage = async ({
   params,
@@ -10,13 +11,17 @@ const CategoriesPage = async ({
 }) => {
   const { storeId } = await params;
 
-  const categories = await ecomDb.category.findMany({
-    where: { storeId },
-    include: { billboard: true }
-  });
+  let categories: Category[] = [];
+    
+  try {
+    const { data } = await fetchAxios<ResponseBody<Category[]>>('get', `/api/${storeId}/categories`);
+    if (data.data?.length) categories = data.data;
+  } catch (error) {
+    console.error('[ERROR] [CATEGORIES_PAGE]', error);
+  }
 
   const formattedCategories: CategoryColumn[] = categories.map(
-    ({ id, name, createdAt, billboard }) => ({ id, name, billboardLabel: billboard.label, createdAt: format(createdAt, "MMMM do, yyyy") })
+    ({ id, name, createdAt, billboard }) => ({ id, name, billboardLabel: billboard!.label, createdAt: format(createdAt, "MMMM do, yyyy") })
   );
 
   return (
