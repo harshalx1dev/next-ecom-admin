@@ -103,6 +103,7 @@ export const SignIn = () => {
                         className="border-primary-foreground rounded-sm h-10"
                         {...field}
                         disabled={isPending}
+                        type="password"
                         placeholder="********"
                       />
                     </FormControl>
