@@ -14,7 +14,8 @@ const SESSION_API_ROUTE = `${process.env.SERVER_URL}/api/auth/session`;
 const getSession = async (request: NextRequest) => {
   const cookies = request.headers.get('cookie');
 
-  console.log('[COOKIES]', cookies);
+  console.log('[HEADERS]', request.headers);
+  console.log('[COOKIES]', request.cookies.toString());
   console.log('[URL]', request.nextUrl);
 
   if (!cookies) return { userId: null, status: 401 };
