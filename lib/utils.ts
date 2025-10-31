@@ -43,7 +43,8 @@ export const fetchAxios = async <T = unknown>(
     const cookieHeader = (await cookies()).getAll().map(({ name, value }) => `${name}=${value}`).join('; ');
     finalConfig.headers = {
       ...finalConfig.headers,
-      "Cookie": cookieHeader
+      "Cookie": cookieHeader,
+      "Origin": process.env.NEXT_PUBLIC_APP_URL
     }
   }
 
