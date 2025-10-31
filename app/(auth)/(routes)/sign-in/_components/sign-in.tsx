@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "@/components/ui/link";
-import useRouter from "@/hooks/use-router";
+// import useRouter from "@/hooks/use-router";
 import { ResponseBody } from "@/lib/types";
-import { fetchAxios } from "@/lib/utils";
+import { fetchAxios, getSession } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { StoreIcon } from "lucide-react";
@@ -31,7 +31,7 @@ type LoginFormSchema = zod.infer<typeof formSchema>;
 
 export const SignIn = () => {
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
+  // const router = useRouter();
 
   const form = useForm<LoginFormSchema>({
     resolver: zodResolver(formSchema),
@@ -46,7 +46,8 @@ export const SignIn = () => {
           toast.error(data.message);
         } else {
           toast.success('Logged In! Redirecting...');
-          router.replace('/');
+          await getSession();
+          // router.replace('/');
         }
       } catch (error) {
         if (error instanceof AxiosError) {
