@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useLoader } from "@/contexts/loader-context";
@@ -8,8 +9,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const { setLoading } = useLoader();
 
   useEffect(() => {
-    // stop loader when the page finishes rendering
-    setLoading(false);
+    let timeout: number | undefined | NodeJS.Timeout = undefined;
+    
+    timeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
   }, [pathname, setLoading]);
 
   return <>{children}</>;
