@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import { useParams, usePathname } from "next/navigation"
+import Link from "./ui/link";
 
 export const MainNav = ({ className }: React.HTMLAttributes<HTMLElement>) => {
   const pathname = usePathname();

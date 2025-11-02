@@ -5,6 +5,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ModalProvider } from "@/providers/modal-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { LoaderProvider } from "@/contexts/loader-context";
+import ClientLayout from "./client-layout";
 
 const interSans = Inter({
   subsets: ["latin"],
@@ -33,9 +35,13 @@ export default function RootLayout({
           className={`${interSans.variable} ${robotoMono.variable} font-sans antialiased`}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <ToastProvider />
-            <ModalProvider />
-            {children}
+            <LoaderProvider>
+              <ClientLayout>
+                <ToastProvider />
+                <ModalProvider />
+                {children}
+              </ClientLayout>
+            </LoaderProvider>
           </ThemeProvider>
         </body>
       </html>

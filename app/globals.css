@@ -116,7 +116,29 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
     @apply bg-background text-foreground;
+  }
+
+  .loading .loader-bar {
+    height: 100% !important;
+  }
+
+  .loading-spinner {
+    animation-name: rotate;
+    animation-timing-function: ease;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes rotate {
+    0% {
+      rotate: 0deg;
+    }
+
+    100% {
+      rotate: 360deg;
+    }
   }
 }
